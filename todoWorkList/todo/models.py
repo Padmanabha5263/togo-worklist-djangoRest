@@ -4,7 +4,7 @@ from django.db import models
 
 class Worklist(models.Model):
     name = models.CharField(max_length=20)
-    discription = models.CharField(max_length=20)
+    description = models.CharField(max_length=100, null=True)
     startdate = models.DateField()
     enddate = models.DateField()
     email = models.EmailField()
