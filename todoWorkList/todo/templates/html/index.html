@@ -2,143 +2,112 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <style>
 body {
   margin: 0;
   min-width: 250px;
 }
 
-/* Include the padding and border in an element's total width and height */
-* {
-  box-sizing: border-box;
+.header{
+ background-color:black;
+ color:white;
+ min-height:40px;
+ padding-top:1px;
+ text-align:center;
 }
 
-/* Remove margins and padding from the list */
-ul {
-  margin: 0;
-  padding: 0;
-}
-
-/* Style the list items */
-ul li {
-  cursor: pointer;
-  position: relative;
-  padding: 12px 8px 12px 40px;
-  list-style-type: none;
-  background: #eee;
-  font-size: 18px;
-  transition: 0.2s;
-  
-  /* make the list items unselectable */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Set all odd list items to a different color (zebra-stripes) */
-ul li:nth-child(odd) {
-  background: #f9f9f9;
-}
-
-/* Darker background-color on hover */
-ul li:hover {
-  background: #ddd;
-}
-
-/* When clicked on, add a background color and strike out text */
-ul li.checked {
-  background: #888;
-  color: #fff;
-  text-decoration: line-through;
-}
-
-/* Add a "checked" mark when clicked on */
-ul li.checked::before {
-  content: '';
-  position: absolute;
-  border-color: #fff;
-  border-style: solid;
-  border-width: 0 2px 2px 0;
-  top: 10px;
-  left: 16px;
-  transform: rotate(45deg);
-  height: 15px;
-  width: 7px;
-}
-
-/* Style the close button */
-.close {
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 12px 16px 12px 16px;
-}
-
-.close:hover {
-  background-color: #f44336;
-  color: white;
-}
-
-/* Style the header */
-.header {
-  background-color: #f44336;
-  padding: 30px 40px;
-  color: white;
-  text-align: center;
-}
-
-/* Clear floats after the header */
-.header:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* Style the input */
-input {
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  width: 75%;
-  padding: 10px;
-  float: left;
-  font-size: 16px;
-}
-
-/* Style the "Add" button */
-.addBtn {
-  padding: 10px;
-  width: 25%;
-  background: #d9d9d9;
-  color: #555;
-  float: left;
-  text-align: center;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-  border-radius: 0;
-}
-
-.addBtn:hover {
-  background-color: #bbb;
+textarea{
+  height:100px !important;
 }
 </style>
 </head>
-<body>
 
-<div id="myDIV" class="header">
-  <h2 style="margin:5px">My To Do List</h2>
-  <input type="text" id="myInput" placeholder="Title...">
-  <span onclick="newElement()" class="addBtn">Add</span>
+<body>
+<div class="header">
+    <header>
+      <h1>Todo work list</h1>
+    </header>
 </div>
 
-<ul id="myUL">
-  {% for i in data %}
-  <li><span>{{i.name}} | {{i.description}} | {{i.email}} | {{i.isWorkDone}}</span></li>
-  {% endfor %}
-</ul>
+<main>
+  <div class="container">
+    <div>
+      <form method='POST' id='imputForm'>
+        <div class="form-group">
+          <label for="workHeading">Work heading</label>
+          <input type="text" class="form-control" id="txtWorkHeading" placeholder="Enter Work Heading">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Description</label>
+          <textarea class="form-control" id="txtDescription"  placeholder="Enter Description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Target Date</label>
+          <input type="date" class="form-control" id="txtDate"  placeholder="Enter Target Date">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Email address</label>
+          <input type="email" class="form-control" id="txtEmail"  placeholder="Enter email">
+        </div>
+        <div  class="form-group">
+            <button type="button" class="btn btn-primary" onclick="apisubmit()">Submit</button>
+        </div>
+      </form>
+    </div>
+    <div id="tableData">
+      <table class="table table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Task Id</th>
+            <th scope="col">Task Name</th>
+            <th scope="col">Task Discription</th>
+            <th scope="col">Email</th>
+            <th scope="col">IsWorkCompleted</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in data %}
+          <tr>
+            <td>{{i.id}} </td>
+            <td>{{i.name}} </td>
+            <td>{{i.description}} </td>
+            <td>{{i.email}} </td>
+            <td>{{i.isWorkDone}} </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
 
+</main>
+<!-- Popper JS -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  apisubmit= function(){
+    $.ajax({
+      type: 'post',
+      url: "{% url 'todoWork:homepage' %}",
+      data:{
+          "name": $("#txtWorkHeading").val().trim(),
+          "description": $("#txtDescription").val().trim(),
+          "enddate": $("#txtDate").val().trim(),
+          "email": $("#txtEmail").val().trim(),
+          "csrfmiddlewaretoken": '{{ csrf_token }}'
+      },
+      success:function(data){
+          html = '<span>'+data.name+'</span> | <span>'+data.description+'</span> | <span>'+data.email+'</span> | <span>'+data.isWorkDone+'</span>'
+          $("#listData").append(html)
+      }
+  })
+  }
+</script>
 </body>
 </html>
