@@ -24,6 +24,11 @@ body {
 textarea{
   height:100px !important;
 }
+
+.form-error-msg{
+  color:red;
+  font-size:12px;
+}
 </style>
 </head>
 
@@ -40,22 +45,26 @@ textarea{
       <form method='POST' id='imputForm'>
         <div class="form-group">
           <label for="workHeading">Work heading</label>
-          <input type="text" class="form-control" id="txtWorkHeading" placeholder="Enter Work Heading">
+          <input type="text" class="form-control" id="txtWorkHeading" placeholder="Enter Work Heading" oninput='validateTextBox(this,true,"Enter Work heading")'>
+          <div class="form-error-msg"></div>
         </div>
         <div class="form-group">
           <label for="exampleInputEmail1">Description</label>
-          <textarea class="form-control" id="txtDescription"  placeholder="Enter Description"></textarea>
+          <textarea class="form-control" id="txtDescription"  placeholder="Enter Description" oninput='validateTextBox(this,true,"Enter Work description")'></textarea>
+          <div class="form-error-msg"></div>
         </div>
         <div class="form-group">
           <label for="exampleInputEmail1">Target Date</label>
-          <input type="date" class="form-control" id="txtDate"  placeholder="Enter Target Date">
+          <input type="date" class="form-control" id="txtDate"  placeholder="Enter Target Date" oninput='validateTextBox(this,true,"select proper date")'>
+          <div class="form-error-msg"></div>
         </div>
         <div class="form-group">
           <label for="exampleInputEmail1">Email address</label>
-          <input type="email" class="form-control" id="txtEmail"  placeholder="Enter email">
+          <input type="email" class="form-control" id="txtEmail"  placeholder="Enter email" oninput='validateTextBox(this,true,"select Email")'>
+          <div class="form-error-msg"></div>
         </div>
         <div  class="form-group">
-            <button type="button" class="btn btn-primary" onclick="apisubmit()">Submit</button>
+            <button type="button" class="btn btn-primary" onclick="validate()">Submit</button>
         </div>
       </form>
     </div>
@@ -91,6 +100,35 @@ textarea{
 <!-- Latest compiled JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
+  var _isFocus;
+    validate = function(){
+        var save=true;
+        if(!validateTextBox("#txtWorkHeading",true,"Enter Work heading")) save=false
+        if(!validateTextBox("#txtDescription",true,"Enter Work description")) save=false
+        if(!validateTextBox("#txtDate",true,"select proper date")) save=false
+        if(!validateTextBox("#txtEmail",true,"select Email")) save=false
+        // if save is true then call sbmit form api
+        if(save){
+          apisubmit()
+        }
+        return save;
+    }
+
+  validateTextBox =function(obj, triggerFocus, msg){
+    console.log("called")
+    hideError(obj)
+    if($(obj).val().trim().length==0){
+      showError(obj,msg)
+      if(!_isFocus){
+        if(triggerFocus) $(obj).focus()
+          _isFocus=true
+      }
+      return false
+    }
+    return true
+  }
+
   apisubmit= function(){
     $.ajax({
       type: 'post',
@@ -107,6 +145,14 @@ textarea{
           $("#listData").append(html)
       }
   })
+  }
+
+  hideError = function(obj){
+    $(obj).siblings(".form-error-msg").hide()
+  }
+
+  showError = function(obj,msg){
+    $(obj).siblings(".form-error-msg").text(msg).show()
   }
 </script>
 </body>
