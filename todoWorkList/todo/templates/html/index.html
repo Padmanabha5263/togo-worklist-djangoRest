@@ -5,8 +5,9 @@
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
 
-<!-- jQuery library -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+{% comment %} <!-- jQuery library -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script> {% endcomment %}
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <style>
 body {
   margin: 0;
@@ -29,71 +30,109 @@ textarea{
   color:red;
   font-size:12px;
 }
+
+.ftr-style{
+  background-color: black;
+    min-height: 100px;
+    color:white;
+}
 </style>
 </head>
 
 <body>
-<div class="header">
+  <div>
     <header>
-      <h1>Todo work list</h1>
+      <div class="header">
+            <h1>Todo work list</h1>
+      </div>
     </header>
-</div>
 
-<main>
-  <div class="container">
-    <div>
-      <form method='POST' id='imputForm'>
-        <div class="form-group">
-          <label for="workHeading">Work heading</label>
-          <input type="text" class="form-control" id="txtWorkHeading" placeholder="Enter Work Heading" oninput='validateTextBox(this,true,"Enter Work heading")'>
-          <div class="form-error-msg"></div>
+    <main>
+      <div class="container">
+        <div>
+          <form method='POST' id='imputForm'>
+            <div class="form-group">
+              <label for="workHeading">Work heading</label>
+              <input type="text" class="form-control" id="txtWorkHeading" placeholder="Enter Work Heading" oninput='validateTextBox(this,true,"Enter Work heading")' tabindex="1">
+              <div class="form-error-msg"></div>
+            </div>
+            <div class="form-group">
+              <label for="txtDescription">Description</label>
+              <textarea class="form-control" id="txtDescription"  placeholder="Enter Description" oninput='validateTextBox(this,true,"Enter Work description")' tabindex="2"></textarea>
+              <div class="form-error-msg"></div>
+            </div>
+            <div class="form-group">
+              <label for="txtDate">Target Date</label>
+              <input type="date" class="form-control" id="txtDate"  placeholder="Enter Target Date" oninput='validateTextBox(this,true,"select proper date")' tabindex="3">
+              <div class="form-error-msg"></div>
+            </div>
+            
+            <div class="form-group">
+              <select class="form-control" id="cboEmployee"  onchange='validateMenuBox(this,true,"select Employee")' tabindex="5">
+                <option value="-1">Select employee</option>
+                {% for i in data %}
+                <option value="{{i.id}}">{{i.name}}</option>
+                {% endfor %}
+              </select>
+              <div class="form-error-msg"></div>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="cboWorkdone"  name= onchange='validateMenuBox(this,true,"select Work status")' tabindex="4">
+                <option value="-1">Select Status</option>
+                <option value="True">True</option>
+                <option value="False">False</option>
+              </select>
+              <div class="form-error-msg"></div>
+            </div>
+            <div  class="form-group">
+                <button type="button" id='btnFormSubmit' class="btn btn-primary" onclick="validate()" tabindex="6">Submit</button>
+            </div>
+          </form>
         </div>
-        <div class="form-group">
-          <label for="exampleInputEmail1">Description</label>
-          <textarea class="form-control" id="txtDescription"  placeholder="Enter Description" oninput='validateTextBox(this,true,"Enter Work description")'></textarea>
-          <div class="form-error-msg"></div>
-        </div>
-        <div class="form-group">
-          <label for="exampleInputEmail1">Target Date</label>
-          <input type="date" class="form-control" id="txtDate"  placeholder="Enter Target Date" oninput='validateTextBox(this,true,"select proper date")'>
-          <div class="form-error-msg"></div>
-        </div>
-        <div class="form-group">
-          <label for="exampleInputEmail1">Email address</label>
-          <input type="email" class="form-control" id="txtEmail"  placeholder="Enter email" oninput='validateTextBox(this,true,"select Email")'>
-          <div class="form-error-msg"></div>
-        </div>
-        <div  class="form-group">
-            <button type="button" class="btn btn-primary" onclick="validate()">Submit</button>
-        </div>
-      </form>
-    </div>
-    <div id="tableData">
-      <table class="table table-striped">
-        <thead class="table-dark">
-          <tr>
-            <th scope="col">Task Id</th>
-            <th scope="col">Task Name</th>
-            <th scope="col">Task Discription</th>
-            <th scope="col">Email</th>
-            <th scope="col">IsWorkCompleted</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in data %}
-          <tr>
-            <td>{{i.id}} </td>
-            <td>{{i.name}} </td>
-            <td>{{i.description}} </td>
-            <td>{{i.email}} </td>
-            <td>{{i.isWorkDone}} </td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-</div>
+        <div id="tableData">
+          <table class="table table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">Task Name</th>
+                <th scope="col">Task Discription</th>
+                <th scope="col">Assigned To</th>
+                <th scope="col">Email</th>
+                <th scope="col">End Date</th>
+                <th scope="col">IsWorkCompleted</th>
+                <td scope="col"></td>
+                <td scope="col"></td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in data %}
+              {% for j in i.worklists%}
+              <tr id="worklist_{{i.id}}_{{j.id}}">
+                <td id="worklistName">{{j.name}}</td>
+                <td id="worklistDescription">{{j.description}}</td>
+                <td id="worklistiName">{{i.name}}</td>
+                <td id="worklistEmail">{{i.email}}</td>
+                <td id="worklistEndDate">{{j.enddate}}</td>
+                <td id="worklistWorkdone">{{j.isWorkDone}}</td>
+                <td><input type="button" value="Update" class="btn-danger" onclick="subUpdteWrklist(worklist_{{i.id}}_{{j.id}},{{i.id}},{{j.id}})"></td>
+                <td><input type="button" value="Delete" class="btn-danger" onclick="apiDeleteTask({{j.id}})"></td>
+              </tr>
+              {% endfor %}
+              {% endfor %}
 
-</main>
+            </tbody>
+          </table>
+        </div>
+    </div>
+
+    </main>
+    <footer>
+      <div class="container-fluid ftr-style">
+        <h4>Designed by <span>PADMANABHA</span></h4>
+        <h5><span>LinkedIN: <a href="https://www.linkedin.com/in/padmanabha-n-5a2a08185/" target="_blank" rel="noopener noreferrer">Click here</a></span></h5>
+        <h5><span>Github: <a href="https://github.com/Padmanabha5263" target="_blank" rel="noopener noreferrer">Click here</a></span></h5>
+      </div>
+    </footer>
+</div>
 <!-- Popper JS -->
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
@@ -102,21 +141,23 @@ textarea{
 <script>
 
   var _isFocus;
+  var _worklistId="null"
     validate = function(){
         var save=true;
         if(!validateTextBox("#txtWorkHeading",true,"Enter Work heading")) save=false
         if(!validateTextBox("#txtDescription",true,"Enter Work description")) save=false
         if(!validateTextBox("#txtDate",true,"select proper date")) save=false
-        if(!validateTextBox("#txtEmail",true,"select Email")) save=false
+        if(!validateMenuBox("#cboEmployee",true,"select employee")) save=false
+        if(!validateMenuBox("#cboWorkdone",true,"select work status")) save=false
         // if save is true then call sbmit form api
         if(save){
+          $("#btnFormSubmit").attr("disabled",true)
           apisubmit()
         }
         return save;
     }
 
   validateTextBox =function(obj, triggerFocus, msg){
-    console.log("called")
     hideError(obj)
     if($(obj).val().trim().length==0){
       showError(obj,msg)
@@ -129,24 +170,73 @@ textarea{
     return true
   }
 
-  apisubmit= function(){
-    $.ajax({
-      type: 'post',
-      url: "{% url 'todoWork:homepage' %}",
-      data:{
-          "name": $("#txtWorkHeading").val().trim(),
-          "description": $("#txtDescription").val().trim(),
-          "enddate": $("#txtDate").val().trim(),
-          "email": $("#txtEmail").val().trim(),
-          "csrfmiddlewaretoken": '{{ csrf_token }}'
-      },
-      success:function(data){
-          html = '<span>'+data.name+'</span> | <span>'+data.description+'</span> | <span>'+data.email+'</span> | <span>'+data.isWorkDone+'</span>'
-          $("#listData").append(html)
+  validateMenuBox=function(obj,triggerFocus,msg){
+    hideError(obj)
+    if($(obj).val()=="-1"){
+      showError(obj,msg)
+      if(_isFocus){
+        if(triggerFocus) $(obj).focus()
+        _isFocus=true
       }
-  })
+      return false
+    }
+    return true
   }
 
+
+  subUpdteWrklist=function(obj, employeeid,worklistid){
+    _worklistId=worklistid
+    $("#txtWorkHeading").val($(obj).children("#worklistName").text())
+    $("#txtDescription").val($(obj).children("#worklistDescription").text())
+    $("#txtDate").val($(obj).children("#worklistEndDate").text())
+    {% comment %} console.log($(obj).children("#worklistEndDate").text().toString().split('-').reverse().join('-')) {% endcomment %}
+    $('#cboEmployee option[value='+employeeid+']').prop('selected', true);
+    $('#cboWorkdone option[value='+$(obj).children("#worklistWorkdone").text()+']').prop('selected', true);
+  }
+
+
+  apisubmit= function(){
+    method = 'POST'
+    formdata = {
+      "taskid":_worklistId.toString(),
+      "name": $("#txtWorkHeading").val().trim(),
+      "description": $("#txtDescription").val().trim(),
+      "enddate": $("#txtDate").val().trim(),
+      "empId" : $("#cboEmployee").val(),
+      "isWorkDone" :$("#cboWorkdone").val(),
+      "csrfmiddlewaretoken": '{{ csrf_token }}' 
+    }
+    console.log(formdata)
+    $.ajax({
+      type: method,
+      url: '{% url 'todoWork:homepage' %}',
+      dataType: 'json',
+      data:formdata,
+      success:function(data){
+          alert("successfully task added")
+      }
+    })
+  }
+
+ apiDeleteTask=function(taskId){
+  jsondata={
+    "taskid":taskId.toString(),
+    "csrfmiddlewaretoken": '{{ csrf_token }}'
+  }
+  console.log(jsondata)
+  $.ajax({
+    type: 'POST',
+    url: '{% url 'todoWork:deleteTask' %}',
+    dataType: 'json',
+    data:jsondata,
+    success:function(data){
+        alert("successfully task deleted")
+    }
+  })
+ }
+
+
+ 
   hideError = function(obj){
     $(obj).siblings(".form-error-msg").hide()
   }
